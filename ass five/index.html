@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>JSON Data Table</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid black;
+    }
+    h1{
+        text-align: center;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <h1>JSON Data Table</h1>
+  <table id="data-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Data will be dynamically inserted here -->
+    </tbody>
+  </table>
+
+
+  <script>
+
+
+    function updateData(id){
+        const ud= prompt("Enter your option to update date: 1 for ID, 2 for NAME, 3 for AGE, 4 for EMAIL");
+        if(ud ==1) 
+        {
+            uid = prompt("Enter user ID to update:");
+            axios.PUT()
+        }
+    }
+function deleteData(id)
+{
+    const remove = window.confirm("Are you want to delete");
+    if(remove){
+        const xhr = new XMLHttpRequest();
+    const url = `http://localhost:8080/data/${id}`
+    xhr.open('DELETE', url, true);
+    xhr.setRequestHeader('Content-type', 'application/json');
+    xhr.onload = function () {
+    if (xhr.status >= 200 && xhr.status < 300) {
+        const responseData = JSON.parse(xhr.responseText);
+        console.log('Response data:', responseData);
+    } else {
+        console.error('Request failed with status:', xhr.status);
+    }
+    };
+    xhr.onerror = function () {
+    console.error('Request error occurred.');
+    };
+    xhr.send();
+    
+    }
+    else{
+        alert("canceled");
+    }
+    
+}
+
+
+    // Function to create table rows with data
+    function createTableRow(data) {
+      const editcell = document.createElement('button');
+      const deletecell = document.createElement('button');
+
+      const row = document.createElement('tr');
+      const { id, name, age, email } = data;
+      row.innerHTML = `<td>${id}</td><td>${name}</td><td>${age}</td><td>${email}</td><td onclick=updateData(${id})>Update</td><td onclick=deleteData(${id})>Delete</td>`;
+      return row;
+    }
+
+    // Function to display data in the table
+    function displayDataInTable(data) {
+      const tableBody = document.querySelector('#data-table tbody');
+      tableBody.innerHTML = '';
+      data.forEach((item) => {
+        const row = createTableRow(item);
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Function to fetch data
+    // async function fetchData() {
+    //   try {
+
+    //     const response = await axios('/data');
+    //     const jsonData = await response.json();
+    //     displayDataInTable(jsonData);
+    //   } catch (error) {
+    //     console.error('Error fetching data:', error);
+    //   }
+    // }
+  
+// function fetchData() {
+//     axios.get('data')
+//         .then(response => {
+//             jsonData = response.data;
+//             displayDataInTable(jsonData);
+//         })
+//         .catch(error => {
+//             console.error('Error fetching JSON data:', error);
+//         });
+// }
+
+
+function fetchData() {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'data', true);
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            jsonData = JSON.parse(xhr.responseText);
+            displayDataInTable(jsonData);
+        } else {
+            console.error('Error fetching JSON data:', xhr.statusText);
+        }
+    };
+    xhr.onerror = function () {
+        console.error('Network error occurred.');
+    };
+    xhr.send();
+}
+
+    // Fetch data when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchData();
+    });
+  </script>
+</body>
+</html>
